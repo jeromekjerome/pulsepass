@@ -1,24 +1,23 @@
 // Copyright (c) 2026 Jerome W. Dewald. All rights reserved.
-import Anthropic from '@anthropic-ai/sdk';
+import OpenAI from 'openai';
 
-const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 async function generateMessage(c) {
-  const response = await anthropic.messages.create({
-    model: 'claude-sonnet-4-6',
+  const completion = await openai.chat.completions.create({
+    model: 'gpt-4o',
     max_tokens: 150,
-    system: `You are a friendly juice bar owner writing a short, personal SMS-length re-engagement message to a loyal customer who hasn't visited recently. Sound genuine and warm — no corporate language. Under 160 characters ideally.`,
-    messages: [{
-      role: 'user',
-      content: `Customer name: ${c.name}
+    messages: [
+      { role: 'system', content: `You are a friendly juice bar owner writing a short, personal SMS-length re-engagement message to a loyal customer who hasn't visited recently. Sound genuine and warm — no corporate language. Under 160 characters ideally.` },
+      { role: 'user', content: `Customer name: ${c.name}
 Favorite order: ${c.favoriteItem || 'our smoothies'}
 Days since last visit: ${c.daysSince}
 Total past visits: ${c.visitCount}
 
-Write the re-engagement message.`
-    }]
+Write the re-engagement message.` }
+    ]
   });
-  return { customerId: c.id, customerName: c.name, message: response.content[0].text };
+  return { customerId: c.id, customerName: c.name, message: completion.choices[0].message.content };
 }
 
 export default async function handler(req, res) {
