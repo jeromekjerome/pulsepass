@@ -13,7 +13,7 @@ function Inner() {
   useEffect(() => {
     const sid = sessionStorage.getItem('sid') || Math.random().toString(36).slice(2);
     sessionStorage.setItem('sid', sid);
-    track('page_visit');
+    track('session_start', { app: 'pulsepass' });
   }, []);
 
   const handleOwnerClick = () => {

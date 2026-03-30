@@ -39,7 +39,7 @@ export default function CustomerView() {
     setNudge(null);
     const earned = logVisit(currentCustomer.id, item);
     setRewardEarned(earned);
-    track('nudge_requested');
+    track('nudge_requested', { app: 'pulsepass' });
     try {
       const res = await fetch('/api/nudge', {
         method: 'POST',
@@ -48,7 +48,7 @@ export default function CustomerView() {
       });
       if (res.ok) {
         const data = await res.json();
-        track('nudge_received');
+        track('nudge_received', { app: 'pulsepass' });
         setNudge(data.message);
       }
     } catch (err) {
