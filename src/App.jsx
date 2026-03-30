@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { track } from './analytics.js';
 import { AppProvider, useApp } from './context/AppContext.jsx';
 import CustomerView from './components/CustomerView.jsx';
 import OwnerView from './components/OwnerView.jsx';
@@ -12,11 +13,7 @@ function Inner() {
   useEffect(() => {
     const sid = sessionStorage.getItem('sid') || Math.random().toString(36).slice(2);
     sessionStorage.setItem('sid', sid);
-    fetch('/api/analytics', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ event: 'page_visit', sessionId: sid }),
-    }).catch(() => {});
+    track('page_visit');
   }, []);
 
   const handleOwnerClick = () => {
