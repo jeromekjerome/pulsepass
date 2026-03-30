@@ -5,6 +5,16 @@ import VisitLogger from './VisitLogger.jsx';
 
 const GOALS = ['Energy Boost', 'Weight Loss', 'Immunity', 'Gut Health', 'Recovery', 'General Wellness'];
 
+function track(event) {
+  const sid = sessionStorage.getItem('sid') || Math.random().toString(36).slice(2);
+  sessionStorage.setItem('sid', sid);
+  fetch('/api/analytics', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ event, sessionId: sid }),
+  }).catch(() => {});
+}
+
 export default function CustomerView() {
   const { currentCustomer, findOrCreateCustomer, logVisit } = useApp();
   const [email, setEmail] = useState('');
@@ -38,6 +48,7 @@ export default function CustomerView() {
     setNudge(null);
     const earned = logVisit(currentCustomer.id, item);
     setRewardEarned(earned);
+    track('nudge_requested');
     try {
       const res = await fetch('/api/nudge', {
         method: 'POST',
@@ -46,6 +57,7 @@ export default function CustomerView() {
       });
       if (res.ok) {
         const data = await res.json();
+        track('nudge_received');
         setNudge(data.message);
       }
     } catch (err) {
