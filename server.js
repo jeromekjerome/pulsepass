@@ -79,10 +79,12 @@ Write the re-engagement message.` }
   res.json({ messages: results });
 });
 
-app.get('*', (req, res) => {
+app.get('/{*path}', (req, res) => {
   res.sendFile(join(__dirname, 'dist', 'index.html'));
 });
 
 const PORT = process.env.PORT || 3011;
-app.listen(PORT, () => console.log(`PulsePass running on port ${PORT}`));
+if (process.env.NODE_ENV !== 'test') {
+  app.listen(PORT, () => console.log(`PulsePass running on port ${PORT}`));
+}
 export default app;
